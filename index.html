@@ -7,10 +7,15 @@
     <!-- IMPRESCINDIBILE PER GH PAGES: Assicura che i percorsi relativi (come i font) siano risolti correttamente. -->
     <base href="/"> 
 
+    <!-- Ottimizzazione Caricamento Font: Connessione anticipata a Google Fonts per migliorare le prestazioni. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <!-- Caricamento di Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Caricamento del Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
     <!-- Punto di mount per l'applicazione React -->
     <style>
         body {
@@ -35,22 +40,21 @@
         <!-- L'applicazione React verrà caricata qui -->
     </div>
 
-    <!-- Caricamento di React e ReactDOM (dal CDN) -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!-- Ottimizzazione React: Usiamo le versioni di produzione (più piccole e veloci) per il deploy. -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <!-- Caricamento di Babel per la compilazione di JSX nel browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- 
         Il codice React/JSX è unito qui. 
-        Abbiamo rimosso la riga 'import' per migliorare la compatibilità 
-        con la compilazione Babel in-browser e risolvere l'errore di visualizzazione.
     -->
     <script type="text/babel">
 
 // Usiamo i componenti React direttamente dalla scope globale 
 // fornite dai CDN (React, useState, ecc.).
-const { useState } = React;
+// NOTA: Usiamo React.useState all'interno dei componenti per massima compatibilità.
+
 
 // Variabili globali per l'API di Gemini
 const apiKey = ""; // La chiave API sarà fornita dall'ambiente di esecuzione
@@ -204,15 +208,14 @@ const ServicesSection = () => (
 
 // Componente Modulo di Contatto
 const ContactFormSection = ({ isSubmitted, handleSubmit }) => {
-    // Stato per i dati del form
-    const [formData, setFormData] = useState({
+    // Uso esplicito di React.useState
+    const [formData, setFormData] = React.useState({
         name: '',
         email: '',
         company: '',
         message: ''
     });
-    // Stato per la funzionalità Gemini
-    const [isGenerating, setIsGenerating] = useState(false);
+    const [isGenerating, setIsGenerating] = React.useState(false);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -359,8 +362,8 @@ const Footer = () => (
 
 // Componente Principale
 const App = () => {
-    // Stato per gestire la visualizzazione del messaggio di conferma del modulo
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    // Uso esplicito di React.useState
+    const [isSubmitted, setIsSubmitted] = React.useState(false);
 
     // Gestore dell'invio del modulo (passato al componente figlio ContactFormSection)
     const handleFormSubmit = (data) => {
@@ -391,6 +394,7 @@ const App = () => {
 
 // Montaggio del componente principale nel DOM
 const container = document.getElementById('root');
+// Usiamo ReactDOM.createRoot per montare l'applicazione
 const root = ReactDOM.createRoot(container);
 root.render(<App />); 
     </script>
