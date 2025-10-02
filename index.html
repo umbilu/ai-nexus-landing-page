@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Nexus - Landing Page (React)</title>
+    <!-- IMPRESCINDIBILE PER GH PAGES: Assicura che i percorsi relativi (come i font) siano risolti correttamente. -->
+    <base href="/"> 
+
     <!-- Caricamento di Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Caricamento del Font Inter -->
@@ -38,8 +41,16 @@
     <!-- Caricamento di Babel per la compilazione di JSX nel browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <!-- 
+        Il codice React/JSX è unito qui. 
+        Abbiamo rimosso la riga 'import' per migliorare la compatibilità 
+        con la compilazione Babel in-browser e risolvere l'errore di visualizzazione.
+    -->
     <script type="text/babel">
-import React, { useState } from 'react';
+
+// Usiamo i componenti React direttamente dalla scope globale 
+// fornite dai CDN (React, useState, ecc.).
+const { useState } = React;
 
 // Variabili globali per l'API di Gemini
 const apiKey = ""; // La chiave API sarà fornita dall'ambiente di esecuzione
@@ -243,10 +254,19 @@ const ContactFormSection = ({ isSubmitted, handleSubmit }) => {
         } catch (error) {
             console.error("Errore nella generazione del testo:", error);
             // In caso di errore, impostiamo un messaggio predefinito
-            setFormData(prev => ({
-                ...prev,
-                message: `[ERRORE GENERAZIONE AI] La tua richiesta originale era: "${userBrief}". Si prega di provare a riscriverla manualmente.`
-            }));
+            // Controlliamo se l'errore è dovuto alla mancanza di API key, cosa comune su GH Pages
+             if (error.message.includes("400")) {
+                 setFormData(prev => ({
+                    ...prev,
+                    message: `[ERRORE API KEY] Impossibile usare l'AI. Verifica che la tua chiave API sia configurata correttamente e che l'API sia accessibile dal tuo ambiente di hosting (GitHub Pages). La tua richiesta originale era: "${userBrief}".`
+                }));
+             } else {
+                 setFormData(prev => ({
+                    ...prev,
+                    message: `[ERRORE GENERAZIONE AI] La tua richiesta originale era: "${userBrief}". Si prega di provare a riscriverla manualmente.`
+                }));
+             }
+
         } finally {
             setIsGenerating(false);
         }
@@ -300,7 +320,7 @@ const ContactFormSection = ({ isSubmitted, handleSubmit }) => {
                                 <button 
                                     type="button" 
                                     onClick={generateDetailedMessage}
-                                    className="w-full bg-cyan-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-cyan-600 transition duration-300 transform hover:scale-[1.01] flex items-center justify-center space-x-2"
+                                    className="w-full bg-cyan-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-cyan-600 transition duration-300 focus:outline-none focus:ring-4 focus:ring-cyan-500 focus:ring-opacity-50 transform hover:scale-[1.01] flex items-center justify-center space-x-2"
                                 >
                                     ✨ Genera Descrizione Dettagliata (AI)
                                 </button>
